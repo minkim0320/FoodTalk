@@ -6,12 +6,14 @@ Created on Fri Feb  5 21:20:53 2021
 @author: eriohoti
 """
 
-from flask import Flask
+from flask import Flask, render_template,url_for
 app = Flask(__name__)
 
+@app.route('/index')
+@app.route('/home')
 @app.route('/')
-def hello_world():
-    return 'Hello, World!'
+def index():
+    return render_template('index.html')
 
 @app.route('/user')
 def hello_user():
@@ -20,3 +22,6 @@ def hello_user():
 @app.route('/business')
 def hello_business():
     return 'Hello, World!'
+
+if __name__ == '__main__':
+    app.run(debug=True);
