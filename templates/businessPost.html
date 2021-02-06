@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/practice.css') }}">
     <div class="business-post-feed">
         <h1>Welcome back, {{bzName.val()}}</h1>
         
@@ -8,6 +9,7 @@
                 <div class="business-post">    
                     <h3 class="post-title">{{bz.val().bzPostName}}</h3>
                     <p class="post-content">{{bz.val().bzPostContent}}</p>
+                    <button class="delete-post" href="#">Delete</button>
                 </div>
             {% endfor %}
         {% else %}

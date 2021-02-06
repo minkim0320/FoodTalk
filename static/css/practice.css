@@ -1,0 +1,32 @@
+body{
+    font-family: Arial;
+    margin-top: 5rem;
+    padding:20px;
+    background-color: #f1f1f1;
+}
+
+.business-post-feed {
+    float: left;
+    width: 75%;
+}
+
+.business-post {
+    padding: 20px;
+    background-color: #e9c9c9;
+    margin-top:20px;
+}
+
+.delete-post {
+    background: #e45656;
+    border-radius:3px;
+    width: 80px;
+    height: 27px;
+    transition: ease-out 0.3s;
+    color:white;
+    font-size: 2rem;
+    outline: none;
+}
+
+.delete-post:hover {
+    box-shadow: inset 60px 0 0 0 #c03917 
+}
