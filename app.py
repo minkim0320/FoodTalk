@@ -8,6 +8,7 @@ Created on Fri Feb  5 21:20:53 2021
 from flask import Flask, render_template,url_for,flash,redirect, session
 from forms import RegistrationForm, LoginForm, BusinessForm
 from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
 import pyrebase
 
 app = Flask(__name__)
@@ -27,8 +28,7 @@ config = {
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 bcrypt = Bcrypt(app)
-#user
-#uids = ''
+login_manager = LoginManager(app)
 
 @app.route('/index')
 @app.route('/home')
@@ -59,10 +59,6 @@ def login():
     if form.validate_on_submit():
         if(form.business.data):
             if(not validate_email(form.email.data,True) and validate_password(form.email.data, True, form.password.data)):
-                user = db.auth.sign_in_with_email_and_password(form.email.data, form.password.data)
-                user = db.auth.refresh(user['refreshToken'])
-                user_id = user['idToken']
-                session['usr'] = user_id
                 flash(f'Account successfully logged in! Welcome, {form.email.data}', 'success')
                 return redirect(url_for('index'))   
             else:
