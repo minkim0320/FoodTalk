@@ -12,3 +12,11 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
+
+@app.route('/user')
+def hello_user():
+    return 'Hello, World!'
+
+@app.route('/business')
+def hello_business():
+    return 'Hello, World!'
