@@ -105,9 +105,7 @@ def validate_password(email,business,password):
     else:
         all_users = db.child("Users").get()
     for user in all_users.each():
-        print(email == user.val().get("email"))
         if(email == user.val().get("email")):
-            print(user.val().get("password"))
             if(bcrypt.check_password_hash(user.val().get("password"),password)):
                 return True
     return False 
