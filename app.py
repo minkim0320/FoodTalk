@@ -66,7 +66,9 @@ def customer_main():
         return render_template('customerMain.html', title='Customer Feed', userName=userName)
     posts = []
     for p in mainFeed:
-        posts.append(db.child("Businesses").child(p.val()).child("bzPost").get())
+        currPost = db.child("Businesses").child(p.val()).child("bzPost").get()
+        for cp in currPost:
+            posts.append(cp)
     return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
 
 if __name__ == '__main__':
