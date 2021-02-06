@@ -64,9 +64,10 @@ def customer_main():
     mainFeed = db.child("Users").child(uid).child("followingBZ").get()
     if mainFeed.val() == None:
         return render_template('customerMain.html', title='Customer Feed', userName=userName)
-    for bz in mainFeed:
-        mainFeed = db.child("Businesses").child(bz.val()).child("bzPost").get()
-    return render_template('customerMain.html', title='Customer Feed', mainFeed=mainFeed, userName=userName) 
+    posts = []
+    for p in mainFeed:
+        posts.append(db.child("Businesses").child(p.val()).child("bzPost").get())
+    return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
 
 if __name__ == '__main__':
     app.run(debug=True);
