@@ -49,17 +49,27 @@ def login():
 @app.route('/business')
 def business_main():
     uid = '-temp' #temp - user['idToken]
-    user = db.child("Businesses").child(uid)
+    user = db.child("Businesses").child(uid) #move these two lines to log in and register 
     bzName = user.child("business").get()
     analytics =db.child("Businesses").child(uid).child("analytics").get()
     if analytics.val() == None:
         return render_template('businessMain.html', title='Business Analytics', bzName=bzName)
     return render_template('businessMain.html', title='Business Analytics', analytics=analytics, bzName=bzName)
 
+@app.route('/business/posts')
+def business_posts():
+    uid = '-temp'
+    user = db.child("Businesses").child(uid)
+    bzPosts = user.child("bzPost").get()
+    bzName = db.child("Businesses").child("-temp").child("business").get()
+    if bzPosts.val() == None:
+        return render_template('businessPost.html', title='Business Post Feed', bzName=bzName)
+    return render_template('businessPost.html', title='Business Post Feed', bzPosts=bzPosts, bzName=bzName)
+
 @app.route('/customer')
 def customer_main():
     uid = '-userTest' #temp - user['idToken]
-    user = db.child("Users").child(uid)
+    user = db.child("Users").child(uid) #move these two lines to log in and register 
     userName = user.child("username").get()
     mainFeed = db.child("Users").child(uid).child("followingBZ").get()
     if mainFeed.val() == None:
@@ -72,4 +82,4 @@ def customer_main():
     return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
 
 if __name__ == '__main__':
-    app.run(debug=True);
+    app.run(debug=True)

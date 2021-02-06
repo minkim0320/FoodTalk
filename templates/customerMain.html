@@ -6,8 +6,8 @@
         {% if posts %}
             {% for p in posts %}
                 <div class="business-post">    
-                    <h3 class="title">{{p.val().bzPostName}}</h3>
-                    <p class="content">{{p.val().bzPostContent}}</p>
+                    <h3 class="post-title">{{p.val().bzPostName}}</h3>
+                    <p class="post-content">{{p.val().bzPostContent}}</p>
                 </div>
             {% endfor %}
         {% else %}
