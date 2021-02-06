@@ -66,6 +66,16 @@ def business_posts():
         return render_template('businessPost.html', title='Business Post Feed', bzName=bzName)
     return render_template('businessPost.html', title='Business Post Feed', bzPosts=bzPosts, bzName=bzName)
 
+@app.route('/business/items')
+def business_items():
+    uid = '-temp'
+    user = db.child("Businesses").child(uid)
+    items = user.child("items").get()
+    bzName = db.child("Businesses").child("-temp").child("business").get()
+    if items.val() == None:
+        return render_template('businessPost.html', title='Business Post Feed', items=items)
+    return render_template('businessPost.html', title='Business Post Feed', items=items, bzName=bzName)
+
 @app.route('/customer')
 def customer_main():
     uid = '-userTest' #temp - user['idToken]
