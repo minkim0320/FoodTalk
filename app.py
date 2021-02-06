@@ -26,6 +26,8 @@ config = {
 
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()
+#user
+#uids = ''
 
 @app.route('/index')
 @app.route('/home')
@@ -42,6 +44,17 @@ def register():
 def login():
     form = LoginForm()
     return render_template('login.html', title='Login', form=form)
+    #user = auth.sign_in_with_email_and_password(email,password)
+
+@app.route('/business')
+def business_main():
+    uid = '-temp' #temp - user['idToken]
+    user = db.child("Businesses").child(uid)
+    bzName = user.child("business").get()
+    analytics = user.child("analytics").get()
+    if analytics.val() == None:
+        return render_template('businessMain.html', title='Business Analytics', bzName=bzName)
+    return render_template('businessMain.html', title='Business Analytics', analytics=analytics, bzName=bzName)
 
 if __name__ == '__main__':
     app.run(debug=True);
