@@ -51,10 +51,22 @@ def business_main():
     uid = '-temp' #temp - user['idToken]
     user = db.child("Businesses").child(uid)
     bzName = user.child("business").get()
-    analytics = user.child("analytics").get()
+    analytics =db.child("Businesses").child(uid).child("analytics").get()
     if analytics.val() == None:
         return render_template('businessMain.html', title='Business Analytics', bzName=bzName)
     return render_template('businessMain.html', title='Business Analytics', analytics=analytics, bzName=bzName)
+
+@app.route('/customer')
+def customer_main():
+    uid = '-userTest' #temp - user['idToken]
+    user = db.child("Users").child(uid)
+    userName = user.child("username").get()
+    mainFeed = db.child("Users").child(uid).child("followingBZ").get()
+    if mainFeed.val() == None:
+        return render_template('customerMain.html', title='Customer Feed', userName=userName)
+    for bz in mainFeed:
+        mainFeed = db.child("Businesses").child(bz.val()).child("bzPost").get()
+    return render_template('customerMain.html', title='Customer Feed', mainFeed=mainFeed, userName=userName) 
 
 if __name__ == '__main__':
     app.run(debug=True);

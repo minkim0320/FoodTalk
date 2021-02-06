@@ -6,8 +6,8 @@
         {% if analytics %}
             {% for a in analytics %}
                 <div class="analytics-post">    
-                    <h3 class="title">{{a.child('aPostName').get().val()}}</h3>
-                    <p class="content">{{a.child('aPostCont').get().val()}}</p><!--aly.val().aPostCont-->
+                    <h3 class="title">{{a.val().aPostName}}</h3>
+                    <p class="content">{{a.val().aPostCont}}</p>
                 </div>
             {% endfor %}
         {% else %}
@@ -18,3 +18,4 @@
         
     </div> 
 {% endblock %}
+
