@@ -1,0 +1,45 @@
+body{
+    font-family: Arial;
+    margin-top: 5rem;
+    padding:20px;
+    background-color: #f1f1f1;
+}
+
+*{
+    font-family: Arial;
+}
+
+.post-feed {
+    float: left;
+    width: 75%;
+}
+
+.business-post {
+    padding: 20px;
+    background-color: #e9c9c9;
+    margin-top:20px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: right;
+    text-align: right;
+    height: 35px;
+}
+
+.delete-post {
+    background: #e45656;
+    text-transform: uppercase;
+    border-radius:3px;
+    width: 100px;
+    height: 35px;
+    transition: ease-out 0.3s;
+    color:white;
+    font-size: 0.8rem;
+    outline: none;
+}
+
+.delete-post:hover {
+    box-shadow: inset 80px 0 0 0 #c03917 
+}

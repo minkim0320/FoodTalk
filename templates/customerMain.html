@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/practice.css') }}">
+    <div class="post-feed">
+        <h1>Welcome back, {{userName.val()}}</h1>
+        
+        {% if posts %}
+            {% for p in posts %}
+                <div class="business-post">    
+                    <h3 class="post-title">{{p.val().bzPostName}}</h3>
+                    <p class="post-content">{{p.val().bzPostContent}}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+                <div class="no-post">
+                    <p>No posts from supporting businesses</p>
+                </div>
+        {% endif %}
+        
+    </div> 
+{% endblock %}

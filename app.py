@@ -2,14 +2,12 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Feb  5 21:20:53 2021
-
 @author: eriohoti
 """
 
-from flask import Flask, render_template,url_for,flash,redirect
+from flask import Flask, render_template,url_for,flash,redirect, session
 from forms import RegistrationForm, LoginForm, BusinessForm
 from flask_bcrypt import Bcrypt
-#from flask_login import LoginManager
 import pyrebase
 
 app = Flask(__name__)
@@ -29,6 +27,8 @@ config = {
 firebase = pyrebase.initialize_app(config)
 db = firebase.database()
 bcrypt = Bcrypt(app)
+#user
+#uids = ''
 
 @app.route('/index')
 @app.route('/home')
@@ -59,6 +59,10 @@ def login():
     if form.validate_on_submit():
         if(form.business.data):
             if(not validate_email(form.email.data,True) and validate_password(form.email.data, True, form.password.data)):
+                user = db.auth.sign_in_with_email_and_password(form.email.data, form.password.data)
+                user = db.auth.refresh(user['refreshToken'])
+                user_id = user['idToken']
+                session['usr'] = user_id
                 flash(f'Account successfully logged in! Welcome, {form.email.data}', 'success')
                 return redirect(url_for('index'))   
             else:
@@ -88,6 +92,50 @@ def register_business():
             flash(f'Email already exists!', 'danger')
     return render_template('register_business.html', title='Business Registration', form=form)
 
+@app.route('/business')
+def business_main():
+    uid = '-temp' #temp - user['idToken]
+    user = db.child("Businesses").child(uid) #move these two lines to log in and register 
+    bzName = user.child("business").get()
+    analytics =db.child("Businesses").child(uid).child("analytics").get()
+    if analytics.val() == None:
+        return render_template('businessMain.html', title='Business Analytics', bzName=bzName)
+    return render_template('businessMain.html', title='Business Analytics', analytics=analytics, bzName=bzName)
+
+@app.route('/business/posts')
+def business_posts():
+    uid = '-temp'
+    user = db.child("Businesses").child(uid)
+    bzPosts = user.child("bzPost").get()
+    bzName = db.child("Businesses").child("-temp").child("business").get()
+    if bzPosts.val() == None:
+        return render_template('businessPost.html', title='Business Post Feed', bzName=bzName)
+    return render_template('businessPost.html', title='Business Post Feed', bzPosts=bzPosts, bzName=bzName)
+
+@app.route('/business/items')
+def business_items():
+    uid = '-temp'
+    user = db.child("Businesses").child(uid)
+    items = user.child("items").get()
+    bzName = db.child("Businesses").child("-temp").child("business").get()
+    if items.val() == None:
+        return render_template('businessPost.html', title='Business Post Feed', items=items)
+    return render_template('businessPost.html', title='Business Post Feed', items=items, bzName=bzName)
+
+@app.route('/customer')
+def customer_main():
+    uid = '-userTest' #temp - user['idToken]
+    user = db.child("Users").child(uid) #move these two lines to log in and register 
+    userName = user.child("username").get()
+    mainFeed = db.child("Users").child(uid).child("followingBZ").get()
+    if mainFeed.val() == None:
+        return render_template('customerMain.html', title='Customer Feed', userName=userName)
+    posts = []
+    for p in mainFeed:
+        currPost = db.child("Businesses").child(p.val()).child("bzPost").get()
+        for cp in currPost:
+            posts.append(cp)
+    return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
 
 def validate_email(email,business):
     if business:
@@ -105,10 +153,12 @@ def validate_password(email,business,password):
     else:
         all_users = db.child("Users").get()
     for user in all_users.each():
+        print(email == user.val().get("email"))
         if(email == user.val().get("email")):
+            print(user.val().get("password"))
             if(bcrypt.check_password_hash(user.val().get("password"),password)):
                 return True
     return False 
 
 if __name__ == '__main__':
-    app.run(debug=True);
+    app.run(debug=True)
