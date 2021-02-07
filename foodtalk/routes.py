@@ -5,7 +5,7 @@ Created on Sat Feb  6 17:30:03 2021
 
 @author: eriohoti
 """
-from flask import render_template,url_for,flash,redirect,session
+from flask import render_template,url_for,flash,redirect,session, request
 from foodtalk import app, db, login_user, bcrypt
 from foodtalk.forms import RegistrationForm, LoginForm, BusinessForm
 from foodtalk.models import User,Business, db_get_business_name
@@ -166,6 +166,32 @@ def logout():
     logout_user()
     flash(f'Successfully logged out', 'sucess')
     return redirect(url_for('index'))
+
+@app.route('/search')
+def search_food():
+    business_name = str(request.args.get('search')).lower()
+    list_business_search = []
+    business_query = db.child("Businesses").get()
+
+    for bq in business_query:
+        temp = str(bq.val().get("business"))
+        if (business_name in temp.lower()): 
+            list_business_search.append(temp)
+    return render_template('searchDisplay.html', business_list=list_business_search)
+
+@app.route('/search/add/<name>', methods=['GET'])
+def search_add(name):
+    name_str = str(name)
+    #current_user.get_id
+    businesses_list = db.child("Businesses").get()
+    for bl in businesses_list:
+        if (bl.val().get("business") == name_str):
+            key_value = bl.key()
+    data = {name_str:key_value}
+    db.child("Users").child(current_user.get_id()).child("followingBZ").update(data)
+    return render_template('searchDisplay.html', after=True)
+
+
 
 def validate_email(email,business):
     if business:
