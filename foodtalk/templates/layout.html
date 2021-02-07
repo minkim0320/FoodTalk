@@ -28,11 +28,17 @@
               <div class="navbar-nav">
                 {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" href="/logout">Logout</a>
+                <div class="search-container nav-item">
+                  <form action="/search">
+                    <input class="search-bar" type="text" placeholder="Search..." name="search">
+                  </form>
+                </div>
                 {% else %}
                 <a class="nav-item nav-link" href="/login">Login</a>
                 <a class="nav-item nav-link" href="/register">Register</a>
                 <a class="nav-item nav-link" href="/register_business">Business Registration</a>
                 {% endif %}
+
               </div>
             </div>
           </div>
