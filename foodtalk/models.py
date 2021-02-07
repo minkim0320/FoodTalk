@@ -41,6 +41,12 @@ def db_get_business_name(businessname):
         if(businessname == user.val().get("business")):
             return businessname
             
+def db_get_business_id(businessname):
+    all_users = db.child("Businesses").get()
+    for user in all_users.each():
+        if(businessname == user.val().get("business")):
+            return user.key()
+        
 class User(UserMixin):
 
     def __init__(self, uid, username, email,business):
