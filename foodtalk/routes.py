@@ -121,26 +121,28 @@ def business_posts():
         return render_template('businessPost.html', title='Business Post Feed', bzName=bzName)
     return render_template('businessPost.html', title='Business Post Feed', bzPosts=bzPosts, bzName=bzName)
 
-@app.route('/business/items', methods=['POST','GET'])
+@app.route('/business/items', methods=['POST','REDIRECT','GET'])
 def business_add_item():
     userType = typeofUser()
     user_id=current_user.get_id()
     bzName = db.child(userType).child(user_id).child("business").get()
 
     if request.method == 'POST':
-        name = request.form['name']
-        price = request.form['price']
-        image = request.form['image']
-        description = request.form['description']
-        newItem = {
-            "name":name,
-            "price":price,
-            "image":image,
-            "description":description
-        }
-        db.child(userType).child(user_id).child("items").push(newItem)
-        items = db.child(userType).child(user_id).child("items").get()
-        return render_template('itemsDisplay.html', title='Business Items', items=items, bzName=bzName)
+        if request.form['submit']=='add':
+            name = request.form['name']
+            price = request.form['price']
+            image = request.form['image']
+            description = request.form['description']
+            newItem = {
+                "name":name,
+                "price":price,
+                "description":description
+            }
+            db.child(userType).child(user_id).child("items").push(newItem)
+            items = db.child(userType).child(user_id).child("items").get()
+        #elif request.form['submit']=='delete':
+
+        return redirect(url_for('business_add_item'))
 
     items = db.child(userType).child(user_id).child("items").get()
     if items.val() == None:
