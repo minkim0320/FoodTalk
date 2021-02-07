@@ -29,7 +29,7 @@
                 {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" href="/logout">Logout</a>
                 <a class="nav-item nav-link" href={{ url_for('business_main', businessname=businessname) }}>Home</a>
-                <a class="nav-item nav-link" href={{ url_for('business_items', businessname=businessname) }}>Your Menu</a>
+                <a class="nav-item nav-link" href={{ url_for('business_add_item', bzName = bzName) }}>Your Menu</a>
                 {% else %}
                 <a class="nav-item nav-link" href="/login">Login</a>
                 <a class="nav-item nav-link" href="/register">Register</a>
