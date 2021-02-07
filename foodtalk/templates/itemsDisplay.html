@@ -6,25 +6,27 @@
     <div class="jumbotron">
 
         <form class="form-group" action="/business/items" method="post" style="width: 500px; margin: left">
-            <label for="name">Item name</label>
+            <label for="name" style="font-weight: bold;">Item name</label>
             <input type="text" name="name" class="form-control">
-            <label for="price">Item price </label>
+            <label for="price" style="font-weight: bold;">Item price </label>
             <input type="text" name="price" class="form-control">
-            <label for="description">Item description</label>
+            <label for="description" style="font-weight: bold;">Item description</label>
             <input type="text" name="description" class="form-control"><br>
-            <button class="btn btn-primary" type="submit" value="add">ADD ITEM</button>
+            <button class="btn btn-primary" style="background-color: rgb(224, 96, 79); border:none;" type="submit" value="add">ADD ITEM</button>
         </form>
     </div>
 
-    <div class="item-feed">
+    <div class="item-feed" style="margin-top: 10px">
         {% if items %}
             {% for i in items %}
-                <div class="item-post">    
-                    <div class="item-title"><h3>{{i.val().name}}</h3></div>
-                    <div class="item-content"><p>{{i.val().price}}</p></div>
-                    <div class="item-content"><p>{{i.val().description}}</p></div>
-                    <div class="button-container"><button class="btn btn-primary" onclick="delete_post()" value="delete">DELETE</button></div>
-                </div>
+                <div class="card" style="background-color: rgb(250, 209, 203);">    
+                    <div class="card-body">
+                        <div class="card-title"><h3>{{i.val().name}}</h3></div>
+                        <div class="card-text"><p>{{i.val().price}}</p></div>
+                        <div class="card-text"><p>{{i.val().description}}</p></div>
+                        <div class="button-container"><button class="btn btn-primary" onclick="delete_post()" style="background-color: rgb(224, 96, 79); border:none;" value="delete">DELETE</button></div>
+                        </div>
+                    </div>
             {% endfor %}
         {% else %}
                 <div class="no-post">
