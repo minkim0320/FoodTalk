@@ -120,8 +120,9 @@ def business_posts(businessname):
 
 @app.route('/business/<bzName>/items', methods=['POST','REDIRECT','GET'])
 def business_add_item(bzName):
-    bzName = db.child("Businesses").child(bzName).child("business").get()
     bzid = db_get_business_id(bzName)
+    bzName = db.child("Businesses").child(bzid).child("business").get()
+    print(bzid)
 
     if request.method == 'POST':
         if request.form['submit']=='add':
