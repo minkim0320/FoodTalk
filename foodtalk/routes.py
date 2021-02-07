@@ -132,7 +132,7 @@ def customer_main(userType,user_id):
 
 @app.route('/customer/business-view')
 def cusotmer_view_business():
-    bid = '-temp' #currently selected
+    bid = '-temp' #switch to currently selected business later#####################################
     bz = db.child("Businesses").child(bid)
     items = bz.child("items").get()
     bzName = db.child("Businesses").child("-temp").child("business").get()
