@@ -1,17 +1,29 @@
 {% extends "businessLayout.html" %}
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/practice.css') }}">
-    <h1>Welcome back, {{ businessname }}</h1>
+    <h1>Welcome back, {{bzName.val()}}</h1>
+
+    <div class="jumbotron">
+
+        <form class="form-group" action="/business/items" method="post" style="width: 500px; margin: left">
+            <label for="name">Item name</label>
+            <input type="text" name="name" class="form-control">
+            <label for="price">Item price </label>
+            <input type="text" name="price" class="form-control">
+            <label for="description">Item description</label>
+            <input type="text" name="description" class="form-control"><br>
+            <button class="btn btn-primary" type="submit" value="add">ADD ITEM</button>
+        </form>
+    </div>
+
     <div class="item-feed">
         {% if items %}
             {% for i in items %}
                 <div class="item-post">    
-                    <div class="item-image"><img src = "images/apple.jpg" alt = ""></div>
                     <div class="item-title"><h3>{{i.val().name}}</h3></div>
-                    <!--p class="item-price">{{i.val().price}}</p-->
+                    <div class="item-content"><p>{{i.val().price}}</p></div>
                     <div class="item-content"><p>{{i.val().description}}</p></div>
-                    <div class="button-container"><button class="delete-post" onclick="delete_post()">DELETE</button>
-                    <button class="delete-post" onclick="delete_post()">EDIT</button></div>
+                    <div class="button-container"><button class="btn btn-primary" onclick="delete_post()" value="delete">DELETE</button></div>
                 </div>
             {% endfor %}
         {% else %}

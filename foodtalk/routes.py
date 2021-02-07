@@ -73,7 +73,7 @@ def login():
                                     business = False)
                         login_user(user)
                 flash(f'Account successfully logged in! ', 'success')
-                return redirect(url_for('customer_main'))
+                return customer_main()
             else:
                 flash(f'Email or password are wrong', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -118,18 +118,33 @@ def business_posts(businessname):
         return render_template('businessPost.html', title='Business Post Feed', businessname=db_get_business_name(businessname))
     return render_template('businessPost.html', title='Business Post Feed', bzPosts=bzPosts, businessname=db_get_business_name(businessname))
 
-@app.route('/business/<businessname>/items', methods=['GET', 'POST'])
-def business_items(businessname):
+@app.route('/business/items', methods=['POST','REDIRECT','GET'])
+def business_add_item():
+    userType = typeofUser()
     user_id=current_user.get_id()
-    items = db.child("Businesses").child(user_id).child("items").get()
-    
-    if businessname is None:
-        flash(f'This business does not exist!', 'danger')
-        return redirect(url_for('index'))
-    if not items:
-        flash(f'This business has no items', 'danger')
-        return redirect(url_for('business_posts', businessname = db_get_business_name(businessname)))
-    return render_template('itemsDisplay.html', title='Shop', items=items, businessname=db_get_business_name(businessname))
+    bzName = db.child(userType).child(user_id).child("business").get()
+
+    if request.method == 'POST':
+        if request.form['submit']=='add':
+            name = request.form['name']
+            price = request.form['price']
+            image = request.form['image']
+            description = request.form['description']
+            newItem = {
+                "name":name,
+                "price":price,
+                "description":description
+            }
+            db.child(userType).child(user_id).child("items").push(newItem)
+            items = db.child(userType).child(user_id).child("items").get()
+        #elif request.form['submit']=='delete':
+
+        return redirect(url_for('business_add_item'))
+
+    items = db.child(userType).child(user_id).child("items").get()
+    if items.val() == None:
+        return render_template('itemsDisplay.html', title='Business Items', bzName=bzName)
+    return render_template('itemsDisplay.html', title='Business Items', items=items, bzName=bzName)
 
 @app.route('/customer')
 def customer_main():
@@ -142,15 +157,16 @@ def customer_main():
     posts = []
     for p in mainFeed:
         currPost = db.child("Businesses").child(p.val()).child("bzPost").get()
-        if( currPost.val() is not None):
+        if currPost.val() is not None:
             for cp in currPost:
                 posts.append(cp)
     return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
 
 @app.route('/customer/cart', methods=['GET', 'POST'])
 def customer_cart():
-    #switch to currently selected USER later#####################################
-    cart_items = db.child("Users").child("-MSr76Cj94IA7bFgmH3F").child("cart").get()
+    userType = typeofUser()
+    user_id=current_user.get_id()
+    cart_items = db.child(userType).child(user_id).child("cart").get()
     if cart_items.val() == None:
         return render_template('customerCart.html', title='Customer', cart_items=cart_items)
     return render_template('customerCart.html', title='Customer Cart', cart_items=cart_items)
