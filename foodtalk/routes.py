@@ -179,13 +179,13 @@ def search_food():
 @app.route('/search/add/<name>', methods=['GET'])
 def search_add(name):
     name_str = str(name)
-    #current_user.get_id
+    user_id=current_user.get_id()
     businesses_list = db.child("Businesses").get()
     for bl in businesses_list:
         if (bl.val().get("business") == name_str):
             key_value = bl.key()
     data = {name_str:key_value}
-    db.child("Users").child(current_user.get_id()).child("followingBZ").update(data)
+    db.child("Users").child(user_id).child("followingBZ").update(data)
     return render_template('searchDisplay.html', after=True)
 
 
