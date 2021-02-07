@@ -52,15 +52,14 @@ def login():
                 for gc in all_users.each():
                     if(form.email.data == gc.val().get("email")):
                         user = Business(uid= gc.key(),
-                                        username = gc.val().get('businessname'),
-                                        businessname = gc.val().get('businessname'),
+                                        username = gc.val().get('business'),
+                                        businessname = gc.val().get('business'),
                                         email = gc.val().get('email'),
                                         business = True)
-                        user_id = gc.key()
-                        userType = "Businesses"
                         login_user(user)
-                flash(f'Account successfully logged in!', 'success')
-                return business_main()
+                        print(gc.val().get('businessname'))
+                        flash(f'Account successfully logged in!', 'success')
+                        return redirect(url_for('business_main', businessname = gc.val().get('business')))
             else:
                 flash(f'Email or password are wrong', 'danger')
         else:
@@ -72,8 +71,6 @@ def login():
                                     username = gc.val().get('username'),
                                     email = gc.val().get('email'),
                                     business = False)
-                        user_id = gc.key()
-                        userType = "Users"
                         login_user(user)
                 flash(f'Account successfully logged in! ', 'success')
                 return redirect(url_for('customer_main'))
@@ -107,7 +104,7 @@ def business_main(businessname):
     analytics = db.child(userType).child(user_id).child("analytics").get()
     if(validate_id(True,user_id)):
         if analytics.val() == None:
-            return render_template('businessMain.html', title='Business Analytics', businessname=db_get_business_name(businessname))
+            return render_template('businessPost.html', title='Business Post Feed', businessname=db_get_business_name(businessname))
         return render_template('businessMain.html', title='Business Analytics', analytics=analytics, businessname=db_get_business_name(businessname))
 
 @app.route('/business/<businessname>/posts')
