@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "customerLayout.html" %}
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/practice.css') }}">
     <h1>{{bzName.val()}}</h1>
@@ -11,7 +11,7 @@
                     <div class="item-title"><h3>{{i.val().name}}</h3></div>
                     <!--p class="item-price">{{i.val().price}}</p-->
                     <div class="item-content"><p>{{i.val().description}}</p></div>
-                    <div class="button-container"><button class="add-cart" onclick="delete_post()">ADD TO CART</button></div>
+                    <div class="button-container"><button class="add-cart">ADD TO CART</button></div>
                 </div>
             {% endfor %}
         {% else %}
@@ -22,5 +22,10 @@
         
     </div> 
 
-    <button id="btnCheckout"></button>
+    <div class="button-container">
+        <button class="add-cart">
+            <a class="" href="/customer/cart">GO TO CART</a>
+        </button>
+    </div>
+
 {% endblock %}

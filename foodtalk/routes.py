@@ -8,17 +8,17 @@ Created on Sat Feb  6 17:30:03 2021
 from flask import render_template,url_for,flash,redirect,session, request
 from foodtalk import app, db, login_user, bcrypt
 from foodtalk.forms import RegistrationForm, LoginForm, BusinessForm
-from foodtalk.models import User,Business
+from foodtalk.models import User,Business, db_get_business_name
 from flask_login import current_user, logout_user
 
 @app.route('/index')
 @app.route('/home')
 @app.route('/')
 def index():
-    if(current_user.is_authenticated and current_user.get_business):
+    if(current_user.is_authenticated and current_user.get_business()):
         return render_template('businessLayout.html')
-    elif(current_user.is_authenticated and not current_user.get_business):
-        return redirect(url_for('customer'))
+    elif(current_user.is_authenticated and not current_user.get_business()):
+        return redirect(url_for('customer_main'))
     return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -59,8 +59,8 @@ def login():
                         user_id = gc.key()
                         userType = "Businesses"
                         login_user(user)
-                flash(f'Account successfully logged in! Welcome, {form.email.data}', 'success')
-                return business_main(userType,user_id)
+                flash(f'Account successfully logged in!', 'success')
+                return business_main()
             else:
                 flash(f'Email or password are wrong', 'danger')
         else:
@@ -75,8 +75,8 @@ def login():
                         user_id = gc.key()
                         userType = "Users"
                         login_user(user)
-                flash(f'Account successfully logged in! Welcome, {form.email.data}', 'success')
-                return customer_main(userType,user_id)
+                flash(f'Account successfully logged in! ', 'success')
+                return redirect(url_for('customer_main'))
             else:
                 flash(f'Email or password are wrong', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -100,32 +100,40 @@ def register_business():
             flash(f'Email already exists!', 'danger')
     return render_template('register_business.html', title='Business Registration', form=form)
 
-@app.route('/business')
-def business_main(userType,user_id):
-    bzName = db.child(userType).child(user_id).child("business").get()
+@app.route('/business/<businessname>')
+def business_main(businessname):
+    userType = typeofUser()
+    user_id=current_user.get_id()
     analytics = db.child(userType).child(user_id).child("analytics").get()
-    if analytics.val() == None:
-        return render_template('businessMain.html', title='Business Analytics', bzName=bzName)
-    return render_template('businessMain.html', title='Business Analytics', analytics=analytics, bzName=bzName)
+    if(validate_id(True,user_id)):
+        if analytics.val() == None:
+            return render_template('businessMain.html', title='Business Analytics', businessname=db_get_business_name(businessname))
+        return render_template('businessMain.html', title='Business Analytics', analytics=analytics, businessname=db_get_business_name(businessname))
 
-@app.route('/business/posts')
-def business_posts(userType,user_id):
+@app.route('/business/<businessname>/posts')
+def business_posts(businessname):
+    userType = typeofUser()
+    user_id=current_user.get_id()
     bzPosts = db.child(userType).child(user_id).child("bzPost").get()
-    bzName = db.child(userType).child(user_id).child("business").get()
+    businessname = db.child(userType).child(user_id).child("business").get()
     if bzPosts.val() == None:
-        return render_template('businessPost.html', title='Business Post Feed', bzName=bzName)
-    return render_template('businessPost.html', title='Business Post Feed', bzPosts=bzPosts, bzName=bzName)
+        return render_template('businessPost.html', title='Business Post Feed', businessname=db_get_business_name(businessname))
+    return render_template('businessPost.html', title='Business Post Feed', bzPosts=bzPosts, businessname=db_get_business_name(businessname))
 
-@app.route('/business/items')
-def business_items(userType,user_id):
-    items = db.child(userType).child(user_id).child("items").get()
-    bzName = db.child(userType).child(user_id).child("business").get()
-    if items.val() == None:
-        return render_template('businessPost.html', title='Business Post Feed', items=items)
-    return render_template('businessPost.html', title='Business Post Feed', items=items, bzName=bzName)
+@app.route('/business/<businessname>/items', methods=['GET', 'POST'])
+def business_items(businessname):
+    user_id=current_user.get_id()
+    items = db.child("Businesses").child(user_id).child("items").get()
+    
+    if businessname is None:
+        flash(f'This business does not exist!', 'danger')
+        return redirect(url_for('index'))
+    return render_template('businessPost.html', title='Shop', items=items, businessname=db_get_business_name(businessname))
 
 @app.route('/customer')
-def customer_main(userType,user_id):
+def customer_main():
+    userType = typeofUser()
+    user_id=current_user.get_id()
     userName = db.child(userType).child(user_id).child("username").get()
     mainFeed = db.child(userType).child(user_id).child("followingBZ").get()
     if mainFeed.val() == None:
@@ -137,14 +145,20 @@ def customer_main(userType,user_id):
             posts.append(cp)
     return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
 
+@app.route('/customer/cart', methods=['GET', 'POST'])
+def customer_cart():
+    #switch to currently selected USER later#####################################
+    cart_items = db.child("Users").child("-MSr76Cj94IA7bFgmH3F").child("cart").get()
+    if cart_items.val() == None:
+        return render_template('customerCart.html', title='Customer', cart_items=cart_items)
+    return render_template('customerCart.html', title='Customer Cart', cart_items=cart_items)
+
 @app.route('/customer/business-view')
 def cusotmer_view_business():
     bid = '-temp' #switch to currently selected business later#####################################
     bz = db.child("Businesses").child(bid)
     items = bz.child("items").get()
     bzName = db.child("Businesses").child("-temp").child("business").get()
-    if items.val() == None:
-        return render_template('userViewBZ.html', title='Viewing Business', items=items)
     return render_template('userViewBZ.html', title='Viewing Business', items=items, bzName=bzName)
 
 @app.route('/logout')
@@ -199,3 +213,30 @@ def validate_password(email,business,password):
             if(bcrypt.check_password_hash(user.val().get("password"),password)):
                 return True
     return False 
+
+def validate_id(business,uid):
+    if(business):
+        all_users = db.child("Businesses").get()
+    else:
+        all_users = db.child("Users").get()
+    for user in all_users.each():
+        if(uid == user.key()):
+            return True
+    return False
+
+def typeofUser():
+    userType = current_user.get_business()
+    if(not userType):
+        result= "Users"
+    else:
+        result= "Businesses"
+    return result
+    
+    
+    
+    
+    
+    
+    
+    
+    

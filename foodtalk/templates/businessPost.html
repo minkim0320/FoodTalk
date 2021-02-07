@@ -2,7 +2,7 @@
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/practice.css') }}">
     <div class="post-feed">
-        <h1>Welcome back, {{bzName.val()}}</h1>
+        <h1>Welcome back, {{ businessname }}</h1>
         
         {% if bzPosts %}
             {% for bz in bzPosts %}
