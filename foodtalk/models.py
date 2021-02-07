@@ -5,17 +5,25 @@ Created on Sat Feb  6 04:36:04 2021
 
 @author: eriohoti
 """
-from app import login_manager
+from foodtalk import login_manager,db
 from flask_login import UserMixin
+
+@login_manager.user_loader 
+def load_user(user_id):
+
+    #c_u = auth.current_user['idToken']
+    current_user_data= db.child("Users").order_by_key().equal_to(user_id).limit_to_first(1).get()
+    
+    return User(uid = user_id,
+                username = current_user_data.val().get("username"),
+                email = current_user_data.val().get("email"))
 
 class User(UserMixin):
 
-    def __init__(self, username, email, password, userId):
+    def __init__(self, uid, username, email):
+        self.__uid = uid
         self.__username = username
         self.__email = email
-        self.__password = password
-        self.__userId = userId
-
 
     def is_active(self):
         return True
@@ -27,8 +35,8 @@ class User(UserMixin):
         return False
 
     def get_id(self):
-        return str(self.__userId)
-
+        return self.__uid
+    
     def get_username(self):
         return self.__username
 
@@ -40,22 +48,15 @@ class User(UserMixin):
 
     def set_email(self, email):
         self.__email = email
+    
+    def set_uid(self, uid):
+        self.__uid = uid
 
-    def set_userId(self, userId):
-        self.__userId = userId
 
-    def get_password(self):
-        return self.__password
-        
-    def set_password(self, password):
-        self.__password = password
-
-    def __repr__(self):
-        return f"User('{self.__userId}','{self.__username}', '{self.__email}')"
-        
 class Business(User):
-    def __init__(self, username, email, password, businessname):
-        super().__init__(username,email,password)
+    def __init__(self, username, email, businessname):
+        super().__init__(username,email)
+        self.username = businessname
         self.businessname = businessname
     
     def get_businessname(self):
