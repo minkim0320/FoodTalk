@@ -14,6 +14,10 @@ from flask_login import current_user, logout_user
 @app.route('/home')
 @app.route('/')
 def index():
+    if(current_user.is_authenticated and current_user.business):
+        return redirect(url_for('business'))
+    elif(current_user.is_authenticated and not current_user.business):
+        return redirect(url_for('customer'))
     return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -47,6 +51,7 @@ def login():
                 for gc in all_users.each():
                     if(form.email.data == gc.val().get("email")):
                         user = Business(uid= gc.key(),
+                                        username = gc.val().get('businessname'),
                                         businessname = gc.val().get('businessname'),
                                         email = gc.val().get('email'))
                         user_id = gc.key()
