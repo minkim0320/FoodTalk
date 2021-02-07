@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "customerLayout.html" %}
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/practice.css') }}">
     <h1>Your shopping cart</h1>
@@ -9,7 +9,11 @@
                     <div class="item-image"><img src = "images/apple.jpg" alt = ""></div>
                     <div class="item-title"><h3>{{c.val().name}}</h3></div>
                     <div class="item-content"><p>{{c.val().price}}</p></div>
-                    <div class="button-container"><button class="delete-post">REMOVE</button></div>
+                    <form method="post" action="/">
+                        <div class="button-container">
+                            <input type="submit" class="btn btn-outline-danger" name ="remove" value="Remove item"/>
+                        </div>
+                    </form>
                 </div>
             {% endfor %}
         {% else %}
@@ -19,9 +23,5 @@
         {% endif %}
     </div> 
 
-    <div class="button-container">
-        <button class="add-cart">
-            <a class="" href="/customer/business-view">EXIT CART</a>
-        </button>
-    </div>
+    <button type="button" class="btn btn-outline-danger mt-4">Exit Cart</button>
 {% endblock %}

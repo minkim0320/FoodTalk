@@ -34,7 +34,12 @@ def findBusiness(user_id):
        # print(db.child(x).order_by_key().equal_to(user_id).limit_to_first(1).get().val())
         if db.child(x).order_by_key().equal_to(user_id).limit_to_first(1).get().val() is not None:
             return x
-    
+
+def db_get_business_name(businessname):
+    all_users = db.child("Businesses").get()
+    for user in all_users.each():
+        if(businessname == user.val().get("business")):
+            return businessname
             
 class User(UserMixin):
 
@@ -90,3 +95,6 @@ class Business(User):
     
     def set_businessname(self,businessname):
         self.__businessname = businessname
+    
+    
+        

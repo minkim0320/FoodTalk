@@ -48,4 +48,11 @@ class BusinessForm(FlaskForm):
     businessname = StringField('Business',
                                validators = [Length(min=3, max=20, message="Input your business name")])
     submit = SubmitField("Register")
+    
+class ItemForm(FlaskForm):
+    itemname = StringField('Item name',
+                           validators = [DataRequired()])
+    prive = StringField('Price',
+                        validators = [DataRequired()])
+    add = SubmitField("Add item")
                                                                                     
