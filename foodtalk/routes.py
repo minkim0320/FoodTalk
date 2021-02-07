@@ -47,7 +47,7 @@ def login():
                 all_users = db.child("Businesses").get()
                 for gc in all_users.each():
                     if(form.email.data == gc.val().get("email")):
-                        user = Business(uid= gc.key(),
+                        user = Business(uid = gc.key(),
                                     businessname = gc.val().get('businessname'),
                                     email = gc.val().get('email'))
                         user_id = gc.key()
@@ -96,8 +96,6 @@ def register_business():
 
 @app.route('/business')
 def business_main(userType,user_id):
-    #uid = '-temp' #temp - user['idToken']
-    #user = db.child("Businesses").child(uid) #move these two lines to log in and register 
     bzName = db.child(userType).child(user_id).child("business").get()
     analytics = db.child(userType).child(user_id).child("analytics").get()
     if analytics.val() == None:
@@ -106,8 +104,6 @@ def business_main(userType,user_id):
 
 @app.route('/business/posts')
 def business_posts(userType,user_id):
-    #uid = '-temp'
-    #user = db.child("Businesses").child(uid)
     bzPosts = db.child(userType).child(user_id).child("bzPost").get()
     bzName = db.child(userType).child(user_id).child("business").get()
     if bzPosts.val() == None:
@@ -116,8 +112,6 @@ def business_posts(userType,user_id):
 
 @app.route('/business/items')
 def business_items(userType,user_id):
-    #uid = '-temp'
-    #user = db.child("Businesses").child(uid)
     items = db.child(userType).child(user_id).child("items").get()
     bzName = db.child(userType).child(user_id).child("business").get()
     if items.val() == None:
@@ -126,8 +120,6 @@ def business_items(userType,user_id):
 
 @app.route('/customer')
 def customer_main(userType,user_id):
-    #uid = '-userTest' #temp - user['idToken]
-    #user = db.child("Users").child(uid) #move these two lines to log in and register 
     userName = db.child(userType).child(user_id).child("username").get()
     mainFeed = db.child(userType).child(user_id).child("followingBZ").get()
     if mainFeed.val() == None:
