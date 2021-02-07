@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/search.css') }}">
+    <div class="business-analytics">
+        {% if after %}
+            <div class="no-post">
+                <p>Successfully followed</p>
+            </div>
+        {% else %}
+            {% if business_list %}
+                {% for a in business_list %}
+                    <div class="container" style="border: 1px solid black">
+                        <br>
+                        <form action="/search/add/{{a}}">
+                            <h3 class="title"> <a href={{ url_for('business_items', businessname=a) }}>{{a}} <button class="follow-btn btn btn-outline-primary" type="submit" style="float:right" >Follow</button></h3>
+                        </form>
+                        <br>
+                    </div>
+                {% endfor %}
+            {% else %}
+                    <div class="no-post">
+                        <p>No businesses found</p>
+                    </div>
+            {% endif %}
+        {% endif %}
+        
+    </div> 
+{% endblock %}
