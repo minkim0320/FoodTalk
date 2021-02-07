@@ -8,7 +8,7 @@ Created on Sat Feb  6 17:30:03 2021
 from flask import render_template,url_for,flash,redirect,session, request
 from foodtalk import app, db, login_user, bcrypt
 from foodtalk.forms import RegistrationForm, LoginForm, BusinessForm
-from foodtalk.models import User,Business, db_get_business_name
+from foodtalk.models import User,Business, db_get_business_name, db_get_business_id
 from flask_login import current_user, logout_user
 
 @app.route('/index')
@@ -120,28 +120,26 @@ def business_posts(businessname):
 
 @app.route('/business/<bzName>/items', methods=['POST','REDIRECT','GET'])
 def business_add_item(bzName):
-    userType = typeofUser()
-    user_id=current_user.get_id()
-    bzName = db.child(userType).child(user_id).child("business").get()
+    bzName = db.child("Businesses").child(bzName).child("business").get()
+    bzid = db_get_business_id(bzName)
 
     if request.method == 'POST':
         if request.form['submit']=='add':
             name = request.form['name']
             price = request.form['price']
-            image = request.form['image']
             description = request.form['description']
             newItem = {
                 "name":name,
                 "price":price,
                 "description":description
             }
-            db.child(userType).child(user_id).child("items").push(newItem)
-            items = db.child(userType).child(user_id).child("items").get()
+            db.child("Businesses").child(bzid).child("items").push(newItem)
+            items = db.child("Businesses").child(bzid).child("items").get()
         #elif request.form['submit']=='delete':
 
         return redirect(url_for('business_add_item'))
 
-    items = db.child(userType).child(user_id).child("items").get()
+    items = db.child("Businesses").child(bzid).child("items").get()
     if items.val() == None:
         return render_template('itemsDisplay.html', title='Business Items', bzName=bzName)
     return render_template('itemsDisplay.html', title='Business Items', items=items, bzName=bzName)
