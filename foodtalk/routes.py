@@ -130,6 +130,16 @@ def customer_main(userType,user_id):
             posts.append(cp)
     return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
 
+@app.route('/customer/business-view')
+def cusotmer_view_business():
+    bid = '-temp' #currently selected
+    bz = db.child("Businesses").child(bid)
+    items = bz.child("items").get()
+    bzName = db.child("Businesses").child("-temp").child("business").get()
+    if items.val() == None:
+        return render_template('userViewBZ.html', title='Viewing Business', items=items)
+    return render_template('userViewBZ.html', title='Viewing Business', items=items, bzName=bzName)
+
 @app.route('/logout')
 def logout():
     logout_user()
