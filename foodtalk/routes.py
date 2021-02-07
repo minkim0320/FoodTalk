@@ -10,7 +10,6 @@ from foodtalk import app, db, login_user, bcrypt
 from foodtalk.forms import RegistrationForm, LoginForm, BusinessForm
 from foodtalk.models import User,Business
 from flask_login import current_user, logout_user
-
 @app.route('/index')
 @app.route('/home')
 @app.route('/')
@@ -48,8 +47,8 @@ def login():
                 for gc in all_users.each():
                     if(form.email.data == gc.val().get("email")):
                         user = Business(uid= gc.key(),
-                                    businessname = gc.val().get('businessname'),
-                                    email = gc.val().get('email'))
+                                        businessname = gc.val().get('businessname'),
+                                        email = gc.val().get('email'))
                         user_id = gc.key()
                         userType = "Businesses"
                         login_user(user)
