@@ -12,19 +12,27 @@ from flask_login import UserMixin
 def load_user(user_id):
 
     #c_u = auth.current_user['idToken']
-    current_user_data= db.child("Users").order_by_key().equal_to(user_id).limit_to_first(1).get()
-    
-    if current_user_data is not None:
+    print(findBusiness(user_id))
+    current_user_data= db.child(findBusiness(user_id)).order_by_key().equal_to(user_id).limit_to_first(1).get()
+    print(findBusiness(user_id))
+    if findBusiness(user_id) == "Users":
         return User(uid = user_id,
                     username = current_user_data.val().get("username"),
                     email = current_user_data.val().get("email"))
     else:
-        current_user_data = db.child("Businesses").order_by_key().equal_to(user_id).limit_to_first(1).get()
+        print("RETURNED A BUSINESS!")
         return Business(uid= user.id,
                         username = current_user_data.val().get("businessname"),
                         businessname = current_user_data.val().get("businessname"),
                         email = current_user_data.val().get("email"))
 
+def findBusiness(user_id):
+    userType = ["Users", "Businesses"]
+    for x in userType:
+        if db.child(x).order_by_key().equal_to(user_id).limit_to_first(1).get() is not None:
+            return x
+    
+            
 class User(UserMixin):
 
     def __init__(self, uid, username, email):

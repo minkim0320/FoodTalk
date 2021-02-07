@@ -10,6 +10,7 @@ from foodtalk import app, db, login_user, bcrypt
 from foodtalk.forms import RegistrationForm, LoginForm, BusinessForm
 from foodtalk.models import User,Business
 from flask_login import current_user, logout_user
+
 @app.route('/index')
 @app.route('/home')
 @app.route('/')
