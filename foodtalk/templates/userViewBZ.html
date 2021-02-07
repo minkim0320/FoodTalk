@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/practice.css') }}">
-    <h1>Welcome back, {{bzName.val()}}</h1>
+    <h1>{{bzName.val()}}</h1>
+
     <div class="item-feed">
         {% if items %}
             {% for i in items %}
@@ -10,15 +11,16 @@
                     <div class="item-title"><h3>{{i.val().name}}</h3></div>
                     <!--p class="item-price">{{i.val().price}}</p-->
                     <div class="item-content"><p>{{i.val().description}}</p></div>
-                    <div class="button-container"><button class="delete-post" onclick="delete_post()">DELETE</button>
-                    <button class="delete-post" onclick="delete_post()">EDIT</button></div>
+                    <div class="button-container"><button class="add-cart" onclick="delete_post()">ADD TO CART</button></div>
                 </div>
             {% endfor %}
         {% else %}
                 <div class="no-post">
-                    <p>No items available</p>
+                    <p>{{bzName.val()}}'s items are empty.</p>
                 </div>
         {% endif %}
         
     </div> 
+
+    <button id="btnCheckout"></button>
 {% endblock %}

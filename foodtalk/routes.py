@@ -59,7 +59,6 @@ def login():
                         user_id = gc.key()
                         userType = "Businesses"
                         login_user(user)
-                        
                 flash(f'Account successfully logged in! Welcome, {form.email.data}', 'success')
                 return business_main(userType,user_id)
             else:
@@ -103,8 +102,6 @@ def register_business():
 
 @app.route('/business')
 def business_main(userType,user_id):
-    #uid = '-temp' #temp - user['idToken']
-    #user = db.child("Businesses").child(uid) #move these two lines to log in and register 
     bzName = db.child(userType).child(user_id).child("business").get()
     analytics = db.child(userType).child(user_id).child("analytics").get()
     if analytics.val() == None:
@@ -113,8 +110,6 @@ def business_main(userType,user_id):
 
 @app.route('/business/posts')
 def business_posts(userType,user_id):
-    #uid = '-temp'
-    #user = db.child("Businesses").child(uid)
     bzPosts = db.child(userType).child(user_id).child("bzPost").get()
     bzName = db.child(userType).child(user_id).child("business").get()
     if bzPosts.val() == None:
@@ -123,8 +118,6 @@ def business_posts(userType,user_id):
 
 @app.route('/business/items')
 def business_items(userType,user_id):
-    #uid = '-temp'
-    #user = db.child("Businesses").child(uid)
     items = db.child(userType).child(user_id).child("items").get()
     bzName = db.child(userType).child(user_id).child("business").get()
     if items.val() == None:
@@ -133,8 +126,6 @@ def business_items(userType,user_id):
 
 @app.route('/customer')
 def customer_main(userType,user_id):
-    #uid = '-userTest' #temp - user['idToken]
-    #user = db.child("Users").child(uid) #move these two lines to log in and register 
     userName = db.child(userType).child(user_id).child("username").get()
     mainFeed = db.child(userType).child(user_id).child("followingBZ").get()
     if mainFeed.val() == None:
@@ -145,6 +136,16 @@ def customer_main(userType,user_id):
         for cp in currPost:
             posts.append(cp)
     return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
+
+@app.route('/customer/business-view')
+def cusotmer_view_business():
+    bid = '-temp' #switch to currently selected business later#####################################
+    bz = db.child("Businesses").child(bid)
+    items = bz.child("items").get()
+    bzName = db.child("Businesses").child("-temp").child("business").get()
+    if items.val() == None:
+        return render_template('userViewBZ.html', title='Viewing Business', items=items)
+    return render_template('userViewBZ.html', title='Viewing Business', items=items, bzName=bzName)
 
 @app.route('/logout')
 def logout():
