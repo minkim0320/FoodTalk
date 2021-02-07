@@ -15,6 +15,7 @@ from flask_login import current_user, logout_user
 @app.route('/home')
 @app.route('/')
 def index():
+    print(str(typeofUser))
     if(current_user.is_authenticated and current_user.get_business):
         return render_template('businessLayout.html')
     elif(current_user.is_authenticated and not current_user.get_business):
@@ -59,8 +60,8 @@ def login():
                         user_id = gc.key()
                         userType = "Businesses"
                         login_user(user)
-                flash(f'Account successfully logged in! Welcome, {form.email.data}', 'success')
-                return business_main(userType,user_id)
+                flash(f'Account successfully logged in!', 'success')
+                return business_main()
             else:
                 flash(f'Email or password are wrong', 'danger')
         else:
@@ -75,8 +76,8 @@ def login():
                         user_id = gc.key()
                         userType = "Users"
                         login_user(user)
-                flash(f'Account successfully logged in! Welcome, {form.email.data}', 'success')
-                return customer_main(userType,user_id)
+                flash(f'Account successfully logged in! ', 'success')
+                return redirect(url_for('customer_main'))
             else:
                 flash(f'Email or password are wrong', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -101,7 +102,9 @@ def register_business():
     return render_template('register_business.html', title='Business Registration', form=form)
 
 @app.route('/business')
-def business_main(userType,user_id):
+def business_main():
+    userType = typeofUser()
+    user_id=current_user.get_id()
     bzName = db.child(userType).child(user_id).child("business").get()
     analytics = db.child(userType).child(user_id).child("analytics").get()
     if analytics.val() == None:
@@ -109,7 +112,9 @@ def business_main(userType,user_id):
     return render_template('businessMain.html', title='Business Analytics', analytics=analytics, bzName=bzName)
 
 @app.route('/business/posts')
-def business_posts(userType,user_id):
+def business_posts():
+    userType = typeofUser()
+    user_id=current_user.get_id()
     bzPosts = db.child(userType).child(user_id).child("bzPost").get()
     bzName = db.child(userType).child(user_id).child("business").get()
     if bzPosts.val() == None:
@@ -117,7 +122,9 @@ def business_posts(userType,user_id):
     return render_template('businessPost.html', title='Business Post Feed', bzPosts=bzPosts, bzName=bzName)
 
 @app.route('/business/items')
-def business_items(userType,user_id):
+def business_items():
+    userType = typeofUser()
+    user_id=current_user.get_id()
     items = db.child(userType).child(user_id).child("items").get()
     bzName = db.child(userType).child(user_id).child("business").get()
     if items.val() == None:
@@ -125,7 +132,9 @@ def business_items(userType,user_id):
     return render_template('businessPost.html', title='Business Post Feed', items=items, bzName=bzName)
 
 @app.route('/customer')
-def customer_main(userType,user_id):
+def customer_main():
+    userType = typeofUser()
+    user_id=current_user.get_id()
     userName = db.child(userType).child(user_id).child("username").get()
     mainFeed = db.child(userType).child(user_id).child("followingBZ").get()
     if mainFeed.val() == None:
@@ -173,3 +182,20 @@ def validate_password(email,business,password):
             if(bcrypt.check_password_hash(user.val().get("password"),password)):
                 return True
     return False 
+
+def typeofUser():
+    userType = current_user.get_business()
+    if(not userType):
+        result= "Users"
+    else:
+        result= "Businesses"
+    return result
+    
+    
+    
+    
+    
+    
+    
+    
+    
