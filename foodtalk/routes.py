@@ -53,7 +53,6 @@ def login():
                         user_id = gc.key()
                         userType = "Businesses"
                         login_user(user)
-                        
                 flash(f'Account successfully logged in! Welcome, {form.email.data}', 'success')
                 return business_main(userType,user_id)
             else:
