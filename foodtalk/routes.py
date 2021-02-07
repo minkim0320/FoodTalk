@@ -15,6 +15,10 @@ from flask_login import current_user, logout_user
 @app.route('/home')
 @app.route('/')
 def index():
+    if(current_user.is_authenticated and current_user.get_business):
+        return render_template('businessLayout.html')
+    elif(current_user.is_authenticated and not current_user.get_business):
+        return redirect(url_for('customer'))
     return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -48,12 +52,16 @@ def login():
                 for gc in all_users.each():
                     if(form.email.data == gc.val().get("email")):
                         user = Business(uid= gc.key(),
-                                    businessname = gc.val().get('businessname'),
-                                    email = gc.val().get('email'))
+                                        username = gc.val().get('businessname'),
+                                        businessname = gc.val().get('businessname'),
+                                        email = gc.val().get('email'),
+                                        business = True)
+                        user_id = gc.key()
+                        userType = "Businesses"
                         login_user(user)
                         
                 flash(f'Account successfully logged in! Welcome, {form.email.data}', 'success')
-                return redirect(url_for('index'))   
+                return business_main(userType,user_id)
             else:
                 flash(f'Email or password are wrong', 'danger')
         else:
@@ -63,10 +71,13 @@ def login():
                     if(form.email.data == gc.val().get("email")):
                         user = User(uid = gc.key(),
                                     username = gc.val().get('username'),
-                                    email = gc.val().get('email'))
+                                    email = gc.val().get('email'),
+                                    business = False)
+                        user_id = gc.key()
+                        userType = "Users"
                         login_user(user)
                 flash(f'Account successfully logged in! Welcome, {form.email.data}', 'success')
-                return redirect(url_for('index'))
+                return customer_main(userType,user_id)
             else:
                 flash(f'Email or password are wrong', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -91,41 +102,41 @@ def register_business():
     return render_template('register_business.html', title='Business Registration', form=form)
 
 @app.route('/business')
-def business_main():
-    uid = '-temp' #temp - user['idToken']
-    user = db.child("Businesses").child(uid) #move these two lines to log in and register 
-    bzName = user.child("business").get()
-    analytics =db.child("Businesses").child(uid).child("analytics").get()
+def business_main(userType,user_id):
+    #uid = '-temp' #temp - user['idToken']
+    #user = db.child("Businesses").child(uid) #move these two lines to log in and register 
+    bzName = db.child(userType).child(user_id).child("business").get()
+    analytics = db.child(userType).child(user_id).child("analytics").get()
     if analytics.val() == None:
         return render_template('businessMain.html', title='Business Analytics', bzName=bzName)
     return render_template('businessMain.html', title='Business Analytics', analytics=analytics, bzName=bzName)
 
 @app.route('/business/posts')
-def business_posts():
-    uid = '-temp'
-    user = db.child("Businesses").child(uid)
-    bzPosts = user.child("bzPost").get()
-    bzName = db.child("Businesses").child("-temp").child("business").get()
+def business_posts(userType,user_id):
+    #uid = '-temp'
+    #user = db.child("Businesses").child(uid)
+    bzPosts = db.child(userType).child(user_id).child("bzPost").get()
+    bzName = db.child(userType).child(user_id).child("business").get()
     if bzPosts.val() == None:
         return render_template('businessPost.html', title='Business Post Feed', bzName=bzName)
     return render_template('businessPost.html', title='Business Post Feed', bzPosts=bzPosts, bzName=bzName)
 
 @app.route('/business/items')
-def business_items():
-    uid = '-temp'
-    user = db.child("Businesses").child(uid)
-    items = user.child("items").get()
-    bzName = db.child("Businesses").child("-temp").child("business").get()
+def business_items(userType,user_id):
+    #uid = '-temp'
+    #user = db.child("Businesses").child(uid)
+    items = db.child(userType).child(user_id).child("items").get()
+    bzName = db.child(userType).child(user_id).child("business").get()
     if items.val() == None:
         return render_template('businessPost.html', title='Business Post Feed', items=items)
     return render_template('businessPost.html', title='Business Post Feed', items=items, bzName=bzName)
 
 @app.route('/customer')
-def customer_main():
-    uid = '-userTest' #temp - user['idToken]
-    user = db.child("Users").child(uid) #move these two lines to log in and register 
-    userName = user.child("username").get()
-    mainFeed = db.child("Users").child(uid).child("followingBZ").get()
+def customer_main(userType,user_id):
+    #uid = '-userTest' #temp - user['idToken]
+    #user = db.child("Users").child(uid) #move these two lines to log in and register 
+    userName = db.child(userType).child(user_id).child("username").get()
+    mainFeed = db.child(userType).child(user_id).child("followingBZ").get()
     if mainFeed.val() == None:
         return render_template('customerMain.html', title='Customer Feed', userName=userName)
     posts = []

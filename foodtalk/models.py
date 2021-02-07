@@ -12,18 +12,37 @@ from flask_login import UserMixin
 def load_user(user_id):
 
     #c_u = auth.current_user['idToken']
-    current_user_data= db.child("Users").order_by_key().equal_to(user_id).limit_to_first(1).get()
-    
-    return User(uid = user_id,
-                username = current_user_data.val().get("username"),
-                email = current_user_data.val().get("email"))
+    print(findBusiness(user_id))
+    current_user_data= db.child(findBusiness(user_id)).order_by_key().equal_to(user_id).limit_to_first(1).get()
+    print(findBusiness(user_id))
+    if findBusiness(user_id) == "Users":
+        return User(uid = user_id,
+                    username = current_user_data.val()[user_id].get("username"),
+                    email = current_user_data.val()[user_id].get("email"),
+                    business = False)
+    else:
+        print("RETURNED A BUSINESS!")
+        return Business(uid= user_id,
+                        username = current_user_data.val()[user_id].get("businessname"),
+                        businessname = current_user_data.val()[user_id].get("businessname"),
+                        email = current_user_data.val()[user_id].get("email"),
+                        business = True)
 
+def findBusiness(user_id):
+    userType = ["Users", "Businesses"]
+    for x in userType:
+        print(db.child(x).order_by_key().equal_to(user_id).limit_to_first(1).get().val())
+        if db.child(x).order_by_key().equal_to(user_id).limit_to_first(1).get().val() is not None:
+            return x
+    
+            
 class User(UserMixin):
 
-    def __init__(self, uid, username, email):
+    def __init__(self, uid, username, email,business):
         self.__uid = uid
         self.__username = username
         self.__email = email
+        self.__business = False
 
     def is_active(self):
         return True
@@ -51,13 +70,20 @@ class User(UserMixin):
     
     def set_uid(self, uid):
         self.__uid = uid
+        
+    def get_business(self):
+        return self.__business
 
 
 class Business(User):
-    def __init__(self, username, email, businessname):
-        super().__init__(username,email)
-        self.username = businessname
-        self.businessname = businessname
+    def __init__(self, uid, username, email, business, businessname):
+        super().__init__(uid, username, email,business)
+        self.__username = businessname
+        self.__business = True
+        self.__businessname = businessname
+    
+    def get_business(self):
+        return self.__business
     
     def get_businessname(self):
         return self.__businessname
