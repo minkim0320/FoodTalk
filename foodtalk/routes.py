@@ -87,7 +87,8 @@ def register_business():
         data = {
             "business" : form.businessname.data,
             "email" : form.email.data,
-            "password" : bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            "password" : bcrypt.generate_password_hash(form.password.data).decode('utf-8'),
+            "bzPost" : ""
             }
         if(validate_email(form.email.data,True)):
             db.child("Businesses").push(data)  
@@ -125,7 +126,10 @@ def business_items(businessname):
     if businessname is None:
         flash(f'This business does not exist!', 'danger')
         return redirect(url_for('index'))
-    return render_template('businessPost.html', title='Shop', items=items, businessname=db_get_business_name(businessname))
+    if not items:
+        flash(f'This business has no items', 'danger')
+        return redirect(url_for('business_posts', businessname = db_get_business_name(businessname)))
+    return render_template('itemsDisplay.html', title='Shop', items=items, businessname=db_get_business_name(businessname))
 
 @app.route('/customer')
 def customer_main():
@@ -138,8 +142,9 @@ def customer_main():
     posts = []
     for p in mainFeed:
         currPost = db.child("Businesses").child(p.val()).child("bzPost").get()
-        for cp in currPost:
-            posts.append(cp)
+        if( currPost.val() is not None):
+            for cp in currPost:
+                posts.append(cp)
     return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
 
 @app.route('/customer/cart', methods=['GET', 'POST'])
