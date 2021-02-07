@@ -11,9 +11,6 @@ from foodtalk.forms import RegistrationForm, LoginForm, BusinessForm
 from foodtalk.models import User,Business
 from flask_login import current_user, logout_user
 
-userType = ""
-user_id = ""
-
 @app.route('/index')
 @app.route('/home')
 @app.route('/')
@@ -80,7 +77,7 @@ def login():
                         userType = "Users"
                         login_user(user)
                 flash(f'Account successfully logged in! ', 'success')
-                return redirect(url_for('customer_main'))
+                return customer_main()
             else:
                 flash(f'Email or password are wrong', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -131,8 +128,8 @@ def business_items():
     items = db.child(userType).child(user_id).child("items").get()
     bzName = db.child(userType).child(user_id).child("business").get()
     if items.val() == None:
-        return render_template('businessPost.html', title='Business Post Feed', items=items)
-    return render_template('businessPost.html', title='Business Post Feed', items=items, bzName=bzName)
+        return render_template('itemsDisplay.html', title='Business Post Feed', items=items)
+    return render_template('itemsDisplay.html', title='Business Post Feed', items=items, bzName=bzName)
 
 @app.route('/customer')
 def customer_main():
@@ -145,14 +142,17 @@ def customer_main():
     posts = []
     for p in mainFeed:
         currPost = db.child("Businesses").child(p.val()).child("bzPost").get()
-        for cp in currPost:
-            posts.append(cp)
+        if currPost.val() is not None:
+            for cp in currPost:
+                posts.append(cp)
     return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
 
 @app.route('/customer/cart')
 def customer_cart():
+    userType = typeofUser()
+    user_id=current_user.get_id()
     #switch to currently selected USER later#####################################
-    cart_items = db.child("Users").child("-MSr76Cj94IA7bFgmH3F").child("cart").get()
+    cart_items = db.child(userType).child(user_id).child("cart").get()
     if cart_items.val() == None:
         return render_template('customerCart.html', title='Customer', cart_items=cart_items)
     return render_template('customerCart.html', title='Customer Cart', cart_items=cart_items)
