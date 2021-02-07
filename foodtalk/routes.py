@@ -118,8 +118,8 @@ def business_posts(businessname):
         return render_template('businessPost.html', title='Business Post Feed', businessname=db_get_business_name(businessname))
     return render_template('businessPost.html', title='Business Post Feed', bzPosts=bzPosts, businessname=db_get_business_name(businessname))
 
-@app.route('/business/items', methods=['POST','REDIRECT','GET'])
-def business_add_item():
+@app.route('/business/<bzName>/items', methods=['POST','REDIRECT','GET'])
+def business_add_item(bzName):
     userType = typeofUser()
     user_id=current_user.get_id()
     bzName = db.child(userType).child(user_id).child("business").get()
