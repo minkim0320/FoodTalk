@@ -11,6 +11,9 @@ from foodtalk.forms import RegistrationForm, LoginForm, BusinessForm
 from foodtalk.models import User,Business
 from flask_login import current_user, logout_user
 
+userType = ""
+user_id = ""
+
 @app.route('/index')
 @app.route('/home')
 @app.route('/')
@@ -145,6 +148,14 @@ def customer_main():
         for cp in currPost:
             posts.append(cp)
     return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
+
+@app.route('/customer/cart')
+def customer_cart():
+    #switch to currently selected USER later#####################################
+    cart_items = db.child("Users").child("-MSr76Cj94IA7bFgmH3F").child("cart").get()
+    if cart_items.val() == None:
+        return render_template('customerCart.html', title='Customer', cart_items=cart_items)
+    return render_template('customerCart.html', title='Customer Cart', cart_items=cart_items)
 
 @app.route('/customer/business-view')
 def cusotmer_view_business():
