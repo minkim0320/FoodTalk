@@ -5,7 +5,7 @@ Created on Sat Feb  6 17:30:03 2021
 
 @author: eriohoti
 """
-from flask import render_template,url_for,flash,redirect,session
+from flask import render_template,url_for,flash,redirect,session,request
 from foodtalk import app, db, login_user, bcrypt
 from foodtalk.forms import RegistrationForm, LoginForm, BusinessForm
 from foodtalk.models import User,Business
@@ -121,15 +121,31 @@ def business_posts():
         return render_template('businessPost.html', title='Business Post Feed', bzName=bzName)
     return render_template('businessPost.html', title='Business Post Feed', bzPosts=bzPosts, bzName=bzName)
 
-@app.route('/business/items')
-def business_items():
+@app.route('/business/items', methods=['POST','GET'])
+def business_add_item():
     userType = typeofUser()
     user_id=current_user.get_id()
-    items = db.child(userType).child(user_id).child("items").get()
     bzName = db.child(userType).child(user_id).child("business").get()
+
+    if request.method == 'POST':
+        name = request.form['name']
+        price = request.form['price']
+        image = request.form['image']
+        description = request.form['description']
+        newItem = {
+            "name":name,
+            "price":price,
+            "image":image,
+            "description":description
+        }
+        db.child(userType).child(user_id).child("items").push(newItem)
+        items = db.child(userType).child(user_id).child("items").get()
+        return render_template('itemsDisplay.html', title='Business Items', items=items, bzName=bzName)
+
+    items = db.child(userType).child(user_id).child("items").get()
     if items.val() == None:
-        return render_template('itemsDisplay.html', title='Business Post Feed', items=items)
-    return render_template('itemsDisplay.html', title='Business Post Feed', items=items, bzName=bzName)
+        return render_template('itemsDisplay.html', title='Business Items', bzName=bzName)
+    return render_template('itemsDisplay.html', title='Business Items', items=items, bzName=bzName)
 
 @app.route('/customer')
 def customer_main():
@@ -151,7 +167,6 @@ def customer_main():
 def customer_cart():
     userType = typeofUser()
     user_id=current_user.get_id()
-    #switch to currently selected USER later#####################################
     cart_items = db.child(userType).child(user_id).child("cart").get()
     if cart_items.val() == None:
         return render_template('customerCart.html', title='Customer', cart_items=cart_items)

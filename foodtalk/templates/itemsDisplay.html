@@ -2,6 +2,25 @@
 {% block content %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/practice.css') }}">
     <h1>Welcome back, {{bzName.val()}}</h1>
+
+    <div class="jumbotron">
+        <!--form action="/" method="post">
+            <input type="text" name="name">
+            <button type="submit">Sub</button>
+            <div class="button-container">
+                <button class="add-cart" type="submit">ADD ITEM</button>
+            </div>
+        </form-->
+        <form class="form-group" action="/business/items" method="post">
+            <label></label>
+            <input type="text" name="name" class="form-control"><br>
+            <input type="text" name="price" class="form-control"><br>
+            <input type="text" name="description" class="form-control"><br>
+            <input type="text" name="image" class="form-control"><br>
+            <button class="btn btn-primary" type="submit">ADD ITEM</button>
+        </form>
+    </div>
+
     <div class="item-feed">
         {% if items %}
             {% for i in items %}
@@ -21,4 +40,10 @@
         {% endif %}
         
     </div> 
+
+    <!--div class="button-container">
+        <button class="add-cart">
+            <a class="" href="/business/addItem">ADD ITEM</a>
+        </button>
+    </div-->
 {% endblock %}
