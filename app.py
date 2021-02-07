@@ -119,8 +119,8 @@ def business_items():
     items = user.child("items").get()
     bzName = db.child("Businesses").child("-temp").child("business").get()
     if items.val() == None:
-        return render_template('businessPost.html', title='Business Post Feed', items=items)
-    return render_template('businessPost.html', title='Business Post Feed', items=items, bzName=bzName)
+        return render_template('itemsDisplay.html', title='Business Items', items=items)
+    return render_template('itemsDisplay.html', title='Business Items', items=items, bzName=bzName)
 
 @app.route('/customer')
 def customer_main():
@@ -136,6 +136,16 @@ def customer_main():
         for cp in currPost:
             posts.append(cp)
     return render_template('customerMain.html', title='Customer Feed', posts=posts, userName=userName) 
+    
+@app.route('/customer/business-view')
+def customer_view_business():
+    bid = '-temp' #currently selected
+    bz = db.child("Businesses").child(bid)
+    items = bz.child("items").get()
+    bzName = db.child("Businesses").child("-temp").child("business").get()
+    if items.val() == None:
+        return render_template('userViewBZ.html', title='Viewing Business', items=items)
+    return render_template('userViewBZ.html', title='Viewing Business', items=items, bzName=bzName)
 
 def validate_email(email,business):
     if business:

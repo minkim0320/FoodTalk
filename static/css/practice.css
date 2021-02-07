@@ -21,11 +21,9 @@ body{
 }
 
 .button-container {
-    display: flex;
-    flex-direction: row;
-    align-items: right;
-    text-align: right;
-    height: 35px;
+    display: grid;
+    grid-template-columns: repeat(2,0fr);
+    gap:2rem;
 }
 
 .delete-post {
@@ -40,6 +38,31 @@ body{
     outline: none;
 }
 
+.add-cart {
+    background: #e45656;
+    text-transform: uppercase;
+    border-radius:3px;
+    width: 130px;
+    height: 35px;
+    transition: ease-out 0.3s;
+    color:white;
+    font-size: 0.8rem;
+    outline: none;
+}
+
 .delete-post:hover {
     box-shadow: inset 80px 0 0 0 #c03917 
+}
+
+.item-feed{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap:2rem;
+}
+
+.item-post{
+    background-color: #e9c9c9;
+    cursor: pointer;
+    margin: 1.5rem 0;
+    padding:20px;
 }
